@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.bootdo.assess.dao.CourseDao">
+
+	<select id="get" resultType="com.bootdo.assess.domain.CourseDO">
+		select `id`,`course_name`,`credit`,`course_no`,`enable` from t_course where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.bootdo.assess.domain.CourseDO">
+		select `id`,`course_name`,`credit`,`course_no`,`enable` from t_course
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="courseName != null and courseName != ''"> and course_name = #{courseName} </if>
+		  		  <if test="credit != null and credit != ''"> and credit = #{credit} </if>
+		  		  <if test="courseNo != null and courseNo != ''"> and course_no = #{courseNo} </if>
+		  		  <if test="enable != null and enable != ''"> and enable = #{enable} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from t_course
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="courseName != null and courseName != ''"> and course_name = #{courseName} </if>
+		  		  <if test="credit != null and credit != ''"> and credit = #{credit} </if>
+		  		  <if test="courseNo != null and courseNo != ''"> and course_no = #{courseNo} </if>
+		  		  <if test="enable != null and enable != ''"> and enable = #{enable} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.bootdo.assess.domain.CourseDO" useGeneratedKeys="true" keyProperty="id">
+		insert into t_course
+		(
+			`course_name`, 
+			`credit`, 
+			`course_no`, 
+			`enable`
+		)
+		values
+		(
+			#{courseName}, 
+			#{credit}, 
+			#{courseNo}, 
+			#{enable}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.bootdo.assess.domain.CourseDO">
+		update t_course 
+		<set>
+			<if test="courseName != null">`course_name` = #{courseName}, </if>
+			<if test="credit != null">`credit` = #{credit}, </if>
+			<if test="courseNo != null">`course_no` = #{courseNo}, </if>
+			<if test="enable != null">`enable` = #{enable}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from t_course where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from t_course where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

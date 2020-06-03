@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<table id="table"
+						   data-detail-view="true">
+						<thead>
+						<tr>
+							<th data-field="id">ID</th>
+							<th data-field="name">Item Name</th>
+						</tr>
+						</thead>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	</div>
+	<div th:include="include :: footer"></div>
+	<script>
+		var $table = $('#table')
+
+		function buildTable($el) {
+			var i; var j; var row
+			var columns = [
+					{title: '指标名称',field: 0},{title: '占比',field: 1}
+			]
+			var data = []
+			$.ajax({
+				url:"/assess/calculation/queryTargetReach",
+				type:"POST",
+				dataType:"JSON",
+				data:[],
+				success:function(res){
+					console.log(res)
+
+					//行
+					for (i = 0; i < res.length; i++) {
+						row = {}
+						row[0] = res[i].targetName
+						row[1] = res[i].targetCompProportion
+						data.push(row)
+					}
+
+					$el.bootstrapTable({
+						columns: columns,
+						data: data,
+						detailView: columns > 1,
+						onExpandRow: function (index, row, $detail) {
+							/* eslint no-use-before-define: ["error", { "functions": false }]*/
+							expandTable($detail)
+						}
+					})
+				}
+			})
+
+
+
+			// for (i = 0; i < cells; i++) {
+			// 	columns.push({
+			// 		field: 'field' + i,
+			// 		title: 'Cell' + i,
+			// 		sortable: true
+			// 	})
+			// }
+			// for (i = 0; i < rows; i++) {
+			// 	row = {}
+			// 	for (j = 0; j < cells; j++) {
+			// 		row['field' + j] = 'Row-' + i + '-' + j
+			// 	}
+			// 	data.push(row)
+			// }
+
+		}
+
+		function expandTable($detail) {
+			buildTable($detail.html('<table></table>').find('table'))
+		}
+
+		$(function() {
+			buildTable($table)
+		})
+	</script>
+<!--	<script type="text/javascript" src="/js/appjs/assess/assesscalculation.js"></script>-->
+</body>
+</html>
